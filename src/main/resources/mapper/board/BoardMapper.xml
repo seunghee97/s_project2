@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.care.root.mybatis.board.BoardMapper">
+	<resultMap type="com.care.root.board.dto.BoardDTO" id="board">
+		<id property="writeNo" column="write_no"/>
+		<result property="title" column="title"/>
+		<result property="content" column="content"/>
+		<result property="saveDate" column="savedate"/>
+		<result property="imageFileName" column="image_file_name"/>
+		<result property="hit" column="hit"/>
+		<result property="id" column="id"/>
+	</resultMap>
+	
+	<resultMap type="com.care.root.board.dto.BoardRepDTO" id="reply">
+		<result property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="content" column="content"/>
+		<result property="write_group" column="write_group"/>
+		<result property="write_date" column="write_date"/>
+	</resultMap>
+	
+	<!-- boardAllList 목록을 보여주기 -->
+	<select id="boardAllList" resultMap="board">
+		select * from mvc_board
+	</select>
+	
+	<!-- writeForm 글작성을 추가하기 -->
+	<insert id="writeSave">
+		insert into mvc_board(write_no,id,title,content,image_file_name) values(mvc_board_seq.nextval,#{id},#{title},#{content},#{imageFileName})
+	</insert> 
+	
+	<!-- 내용글 보기 -->
+	<select id="contentView" resultMap="board">
+ 		select * from mvc_board where write_no=#{writeNo}
+ 	</select>
+ 	
+ 	<!-- 조회수 -->
+ 	<update id="upHit">
+ 		update mvc_board set hit=hit+1 where write_no=#{writeNo}
+ 	</update>
+ 	
+ 	<!-- 수정하기 -->
+ 	<update id="modify">
+ 		update mvc_board set title=#{title},content=#{content},image_file_name=#{imageFileName} where write_no=#{writeNo} 
+ 	</update>
+ 	
+ 	<!-- 삭제하기 -->
+ 	<delete id="delete">
+ 		delete from mvc_board where write_no=#{writeNo}
+ 	</delete>
+ 	
+ 	<!-- 답변 추가하기 -->
+	<insert id="addReply">
+		insert into reply(id,title,content,write_group) values(#{id},#{title},#{content},#{write_group})
+	</insert>
+	
+	<!-- 답변 조회하기 -->
+	<select id="getRepList" resultMap="reply">
+		select * from reply where write_group=#{write_group} order by write_date desc 
+		<!-- 내림차순, 최신순으로 답글을 가져온다. -->
+	</select>
+</mapper>
